@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS servitel_db;
+GRANT ALL PRIVILEGES ON servitel_db.* TO 'servitel_user'@'%';
+FLUSH PRIVILEGES;

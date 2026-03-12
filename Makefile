@@ -4,7 +4,7 @@ PHP_CONT = laravel_app
 DB_SERVICE = db
 APP_SERVICE = app
 
-.PHONY: help build up up-db down restart ps logs shell migrate seed redeploy-app
+.PHONY: help build up up-db down restart ps logs shell get-token migrate seed migrate-fresh redeploy-app
 
 help: ## Muestra este mensaje de ayuda
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUso:\n  make \033[36m<comando>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
@@ -36,11 +36,18 @@ logs: ## Muestra los logs en tiempo real
 shell: ## Entra a la terminal del contenedor de Laravel
 	$(DOCKER_COMPOSE) exec app sh
 
+# Genera un token para el usuario admin y lo muestra en consola
+get-token: ## Genera un token de acceso para el usuario admin
+	@$(DOCKER_COMPOSE) exec $(APP_SERVICE) php artisan tinker --execute="echo App\Models\User::where('email', 'admin@servitel.dev')->first()->createToken('postman-token')->plainTextToken"
+
 migrate: ## Ejecuta las migraciones de base de datos
 	$(DOCKER_COMPOSE) exec app php artisan migrate
 
 seed: ## Ejecuta los seeders de la base de datos
 	$(DOCKER_COMPOSE) exec app php artisan db:seed
+
+migrate-fresh: ## Borra todo y vuelve a ejecutar migraciones y seeders
+	$(DOCKER_COMPOSE) exec $(APP_SERVICE) php artisan migrate:fresh --seed
 
 init: build up ## Inicializa el proyecto por primera vez (build + up)
 	@echo "Esperando a que la BD esté lista..."

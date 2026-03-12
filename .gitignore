@@ -30,3 +30,4 @@ Homestead.json
 auth.json
 
 !.env.example
+data/mysql/

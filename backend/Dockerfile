@@ -10,7 +10,8 @@
         libzip-dev \
         libpng-dev \
         oniguruma-dev \
-        icu-dev
+        icu-dev \
+        zlib-dev
     
     # Instalar extensiones de PHP básicas para el proceso de instalación
     RUN docker-php-ext-install zip pdo_mysql gd mbstring intl
@@ -27,6 +28,7 @@
         --no-plugins \
         --no-scripts \
         --prefer-dist \
+        --optimize-autoloader \
         --ignore-platform-reqs
     
     # --- ETAPA 2: Imagen Final de Producción ---
@@ -48,6 +50,8 @@
         icu-dev \
         && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath zip intl \
         && apk del .build-deps
+    
+    COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
     
     # Copiar el código de la aplicación desde el host
     COPY . /var/www

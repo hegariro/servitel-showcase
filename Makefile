@@ -4,7 +4,7 @@ PHP_CONT = laravel_app
 DB_SERVICE = db
 APP_SERVICE = app
 
-.PHONY: help build up up-db down restart ps logs shell get-token migrate seed migrate-fresh redeploy-app
+.PHONY: help build up up-db down restart ps logs swagger shell get-token migrate seed migrate-fresh redeploy-app
 
 help: ## Muestra este mensaje de ayuda
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUso:\n  make \033[36m<comando>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
@@ -32,6 +32,9 @@ ps: ## Lista los contenedores activos
 
 logs: ## Muestra los logs en tiempo real
 	$(DOCKER_COMPOSE) logs -f
+
+swagger: ## Genera la documentación de Swagger
+	@$(DOCKER_COMPOSE) exec $(APP_SERVICE) php artisan l5-swagger:generate
 
 shell: ## Entra a la terminal del contenedor de Laravel
 	$(DOCKER_COMPOSE) exec app sh

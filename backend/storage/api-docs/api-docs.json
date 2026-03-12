@@ -15,6 +15,66 @@
         }
     ],
     "paths": {
+        "/api/partner/dogs": {
+            "get": {
+                "tags": [
+                    "Partner - Dogs"
+                ],
+                "summary": "Obtener imagen aleatoria de un perro",
+                "operationId": "8346fcac17aaa9a0e63088fdcbbb0930",
+                "responses": {
+                    "200": {
+                        "description": "Imagen obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "https://images.dog.ceo/breeds/spaniel-irish/n02102973_158.jpg"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "success"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "502": {
+                        "description": "Error al consumir API externa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al consumir la API externa de Dog CEO."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/products": {
             "get": {
                 "tags": [
@@ -588,6 +648,10 @@
         }
     },
     "tags": [
+        {
+            "name": "Partner - Dogs",
+            "description": "Partner - Dogs"
+        },
         {
             "name": "Products",
             "description": "Products"

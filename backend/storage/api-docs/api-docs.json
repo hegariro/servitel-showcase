@@ -1,0 +1,596 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Servitel API",
+        "description": "Documentación de la API de microservicios Servitel para la gestión de productos.",
+        "contact": {
+            "email": "admin@servitel.dev"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8080",
+            "description": "Servidor Local de Desarrollo"
+        }
+    ],
+    "paths": {
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Obtener lista de productos",
+                "operationId": "1bfaa78d1c2c3848ab8165c5dadcad3e",
+                "responses": {
+                    "200": {
+                        "description": "Lista de productos obtenida con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Product"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No se pudo recuperar la lista de productos en este momento."
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Crear un nuevo producto",
+                "operationId": "e8185e307706e2cd84bbcf5171e2f09d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product_name",
+                                    "product_type",
+                                    "unit_of_measurement",
+                                    "net_content"
+                                ],
+                                "properties": {
+                                    "product_name": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Aceite de Oliva"
+                                    },
+                                    "product_description": {
+                                        "type": "string",
+                                        "example": "Aceite extra virgen",
+                                        "nullable": true
+                                    },
+                                    "product_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "lata",
+                                            "bolsa",
+                                            "caja",
+                                            "botella"
+                                        ],
+                                        "example": "botella"
+                                    },
+                                    "unit_of_measurement": {
+                                        "type": "string",
+                                        "example": "ml"
+                                    },
+                                    "net_content": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "example": 500
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Producto creado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product created successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Product"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    },
+                    "422": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The product name field is required."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno al intentar guardar el producto."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/products/{product}": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Obtener un producto por ID",
+                "operationId": "05f6ffcb49f47b4f4fc1a1c21ed60011",
+                "parameters": [
+                    {
+                        "name": "product",
+                        "in": "path",
+                        "description": "UUID del producto",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "9d4e8a1b-2c3d-4e5f-6a7b-8c9d0e1f2a3b"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Producto obtenido con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Product"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    },
+                    "404": {
+                        "description": "Producto no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Producto no encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Actualizar un producto",
+                "operationId": "c474d1318e5b8c3de1f4d52b6053111f",
+                "parameters": [
+                    {
+                        "name": "product",
+                        "in": "path",
+                        "description": "UUID del producto a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "9d4e8a1b-2c3d-4e5f-6a7b-8c9d0e1f2a3b"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Campos a actualizar (todos son opcionales en PUT)",
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "product_name": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Aceite de Oliva Premium"
+                                    },
+                                    "product_description": {
+                                        "type": "string",
+                                        "example": "Aceite extra virgen 500ml",
+                                        "nullable": true
+                                    },
+                                    "product_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "lata",
+                                            "bolsa",
+                                            "caja",
+                                            "botella"
+                                        ],
+                                        "example": "botella"
+                                    },
+                                    "unit_of_measurement": {
+                                        "type": "string",
+                                        "example": "ml"
+                                    },
+                                    "net_content": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "example": 750
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Producto actualizado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product updated successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Product"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    },
+                    "404": {
+                        "description": "Producto no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Product]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No se pudo actualizar el producto."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Eliminar un producto",
+                "operationId": "1a0a353d0842ff4f9347bb66ec53e3ea",
+                "parameters": [
+                    {
+                        "name": "product",
+                        "in": "path",
+                        "description": "UUID del producto a eliminar",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "9d4e8a1b-2c3d-4e5f-6a7b-8c9d0e1f2a3b"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Producto eliminado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    },
+                    "404": {
+                        "description": "Producto no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Product]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No se pudo eliminar el producto o no existe."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Product": {
+                "required": [
+                    "product_id",
+                    "product_name",
+                    "product_type",
+                    "unit_of_measurement",
+                    "net_content"
+                ],
+                "properties": {
+                    "product_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "9d4e8a1b-2c3d-4e5f-6a7b-8c9d0e1f2a3b"
+                    },
+                    "product_name": {
+                        "type": "string",
+                        "example": "Aceite de Oliva"
+                    },
+                    "product_description": {
+                        "type": "string",
+                        "example": "Aceite extra virgen 500ml",
+                        "nullable": true
+                    },
+                    "product_type": {
+                        "type": "string",
+                        "enum": [
+                            "lata",
+                            "bolsa",
+                            "caja",
+                            "botella"
+                        ],
+                        "example": "botella"
+                    },
+                    "unit_of_measurement": {
+                        "type": "string",
+                        "example": "ml"
+                    },
+                    "net_content": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 500
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Products",
+            "description": "Products"
+        }
+    ]
+}
